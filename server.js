@@ -9,7 +9,21 @@ var requestHandler = function(request, response) {
   /*Investigate the request object. 
     You will need to use several of its properties: url and method
   */
-  //console.log(request);
+  console.log(request);
+  if (request.url === '/listings' && request.method === 'GET') {
+      // send listingData in the JSON format as a response
+      // 200 ok
+      response.writeHead(200, {'Content-Type':'application/json'});
+      response.write(listingData);
+      response.end();
+  }
+  else {
+      //error 404 not found
+    response.writeHead(404, {'Content-Type':'text/plain'});
+    response.write("404 Not Found\n");
+    response.end();
+
+  }
 
   /*
     Your request handler should send listingData in the JSON format as a response if a GET request 
@@ -32,9 +46,18 @@ var requestHandler = function(request, response) {
 };
 
 fs.readFile('listings.json', 'utf8', function(err, data) {
+  if (err){
+    throw err;
+  }
+  listingData = data;
+  server = http.createServer(requestHandler);
+  server.listen(port, function(){
+    console.log('Sever is listening on port ' + port);
+  })
   /*
     This callback function should save the data in the listingData variable, 
-    then start the server. 
+    then start the server.
+
 
     HINT: Check out this resource on fs.readFile
     //https://nodejs.org/api/fs.html#fs_fs_readfile_path_options_callback
